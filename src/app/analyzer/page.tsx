@@ -36,6 +36,7 @@ const SUBSCRIBER_OPTIONS: { label: string; value: number | null }[] = [
   { label: "10만", value: 100_000 },
   { label: "20만", value: 200_000 },
   { label: "30만", value: 300_000 },
+  { label: "40만", value: 400_000 },
   { label: "50만", value: 500_000 },
   { label: "100만", value: 1_000_000 },
 ];
@@ -74,8 +75,9 @@ export default function Page() {
     videoType: "longform",
   });
 
-  // 비기본값 필터 개수 (배지용) — 영상유형은 별도 토글이므로 제외
+  // 비기본값 필터 개수 (배지용)
   const activeFilterCount = [
+    videoType !== "longform",
     uploadPeriod !== "all",
     minViewCountInput.trim() !== "",
     maxSubscriberCount !== null,
@@ -176,7 +178,7 @@ export default function Page() {
     <div className="min-h-screen" style={{ backgroundColor: "var(--background)" }}>
       {/* ── 헤더 ── */}
       <header
-        className="sticky top-0 z-20 px-6 py-4 flex items-center gap-3"
+        className="sticky top-0 z-20 px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3"
         style={{
           backgroundColor: "rgba(15,17,23,0.85)",
           backdropFilter: "blur(12px)",
@@ -202,20 +204,20 @@ export default function Page() {
         </span>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col gap-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-10 flex flex-col gap-5 sm:gap-8">
         {/* ── 입력 패널 ── */}
         <motion.section
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="rounded-2xl p-6 flex flex-col gap-5"
+          className="rounded-2xl p-4 sm:p-6 flex flex-col gap-4 sm:gap-5"
           style={{
             backgroundColor: "var(--surface)",
             border: "1px solid var(--border)",
           }}
         >
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+            <h1 className="text-xl sm:text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
               구독자 대비 고성과 영상 찾기
             </h1>
             <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -260,7 +262,7 @@ export default function Page() {
                   href={GOOGLE_API_CONSOLE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap"
+                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap flex-shrink-0"
                   style={{
                     backgroundColor: "var(--surface-2)",
                     border: "1px solid var(--border)",
@@ -276,7 +278,7 @@ export default function Page() {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  발급받기
+                  <span>발급받기</span>
                 </a>
               </div>
             </div>
@@ -366,42 +368,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* ── 영상 유형 세그먼트 토글 ── */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold flex-shrink-0" style={{ color: "var(--text-secondary)" }}>
-              영상 유형
-            </span>
-            <div
-              className="flex rounded-xl p-1 gap-1"
-              style={{ backgroundColor: "var(--surface-2)", border: "1px solid var(--border)" }}
-            >
-              {(
-                [
-                  { value: "longform", label: "롱폼", sub: "3분+" },
-                  { value: "shorts", label: "숏폼", sub: "3분↓" },
-                ] as const
-              ).map(({ value, label, sub }) => (
-                <button
-                  key={value}
-                  onClick={() => setVideoType(value)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all"
-                  style={{
-                    backgroundColor: videoType === value ? "var(--accent)" : "transparent",
-                    color: videoType === value ? "#fff" : "var(--text-secondary)",
-                  }}
-                >
-                  {label}
-                  <span
-                    className="text-xs font-normal opacity-70"
-                    style={{ fontSize: "11px" }}
-                  >
-                    {sub}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* ── 필터 패널 (접기/펼치기) ── */}
           <AnimatePresence initial={false}>
             {showFilters && (
@@ -420,7 +386,25 @@ export default function Page() {
                     border: "1px solid var(--border)",
                   }}
                 >
-                  {/* 1. 업로드일자 */}
+                  {/* 1. 영상 유형 */}
+                  <FilterRow label="영상 유형">
+                    {(
+                      [
+                        { value: "longform", label: "롱폼", sub: "3분+" },
+                        { value: "shorts", label: "숏폼", sub: "3분↓" },
+                      ] as const
+                    ).map(({ value, label, sub }) => (
+                      <OptionButton
+                        key={value}
+                        active={videoType === value}
+                        onClick={() => setVideoType(value)}
+                      >
+                        {label} <span style={{ opacity: 0.6, fontSize: "11px" }}>{sub}</span>
+                      </OptionButton>
+                    ))}
+                  </FilterRow>
+
+                  {/* 2. 업로드일자 */}
                   <FilterRow label="업로드일자">
                     {PERIOD_OPTIONS.map((opt) => (
                       <OptionButton
@@ -444,12 +428,11 @@ export default function Page() {
                           setMinViewCountInput(e.target.value.replace(/[^0-9]/g, ""))
                         }
                         placeholder="제한 없음 (예: 100000)"
-                        className="px-3 py-1.5 rounded-lg text-sm outline-none transition-all"
+                        className="px-3 py-1.5 rounded-lg text-sm outline-none transition-all w-full sm:w-[200px]"
                         style={{
                           backgroundColor: "var(--surface)",
                           border: "1px solid var(--border)",
                           color: "var(--text-primary)",
-                          width: "200px",
                         }}
                         onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
                         onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
@@ -493,7 +476,7 @@ export default function Page() {
                   필터 {activeFilterCount}개 적용 중
                 </span>
               ) : (
-                "⚙ 버튼으로 상세 조건(날짜·조회수·구독자)을 설정하세요"
+                "⚙ 버튼으로 영상유형·날짜·조회수·구독자를 설정하세요"
               )}
             </p>
             <motion.button
@@ -514,7 +497,7 @@ export default function Page() {
                       strokeLinecap="round"
                     />
                   </svg>
-                  분석 중...
+                  검색 중...
                 </>
               ) : (
                 <>
@@ -522,7 +505,7 @@ export default function Page() {
                     <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
                     <path d="M11 11L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
-                  분석 시작
+                  검색하기
                 </>
               )}
             </motion.button>
@@ -630,7 +613,7 @@ export default function Page() {
               className="flex flex-col gap-5"
             >
               {/* 결과 헤더 + 뷰 전환 */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
                     분석 결과

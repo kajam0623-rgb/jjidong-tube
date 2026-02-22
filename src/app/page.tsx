@@ -46,7 +46,7 @@ export default function LandingPage() {
           </div>
 
           {/* 가운데 내비게이션 */}
-          <nav className="flex-1 flex items-center justify-center gap-8">
+          <nav className="flex-1 hidden sm:flex items-center justify-center gap-8">
             {["요금제", "사용내역"].map((item) => (
               <a
                 key={item}
@@ -60,7 +60,7 @@ export default function LandingPage() {
           </nav>
 
           {/* 우측: 시작하기 버튼 */}
-          <Link href="/analyzer">
+          <Link href="/analyzer" className="ml-auto sm:ml-0">
             <motion.button
               whileTap={{ scale: 0.96 }}
               className="px-5 py-2 rounded-xl text-sm font-semibold flex-shrink-0"
@@ -79,7 +79,7 @@ export default function LandingPage() {
       {/* ── 메인 ── */}
       <main className="flex-1 flex flex-col items-center justify-center text-center px-6">
         {/* Hero */}
-        <section className="flex flex-col items-center gap-6 py-28">
+        <section className="flex flex-col items-center gap-6 py-16 sm:py-28">
           {/* 제목 + "유튜브" 배지 */}
           <motion.div {...fadeUp(0)} className="relative inline-block">
             <h1
@@ -92,6 +92,7 @@ export default function LandingPage() {
             {/* 우측 상단, 30도 우측 기울기 배지 */}
             <span
               aria-label="YouTube 기반 서비스"
+              className="hidden sm:block"
               style={{
                 position: "absolute",
                 top: "-10px",
@@ -125,7 +126,7 @@ export default function LandingPage() {
         </section>
 
         {/* CTA */}
-        <section className="flex flex-col items-center gap-5 pb-32">
+        <section className="flex flex-col items-center gap-5 pb-16 sm:pb-32">
           <motion.p
             {...fadeUp(0.22)}
             className="text-lg font-semibold"
@@ -158,7 +159,7 @@ export default function LandingPage() {
         className="mt-auto"
         style={{ backgroundColor: "white", borderTop: "1px solid #e5e7eb" }}
       >
-        <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between gap-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex flex-col sm:flex-row justify-between gap-8">
           {/* 좌측: 회사 기본 정보 */}
           <address
             className="not-italic flex flex-col gap-1"
